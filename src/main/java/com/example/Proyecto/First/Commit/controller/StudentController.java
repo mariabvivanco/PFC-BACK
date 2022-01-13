@@ -1,17 +1,24 @@
 package com.example.Proyecto.First.Commit.controller;
 
+import com.example.Proyecto.First.Commit.dao.StudentDAO;
 import com.example.Proyecto.First.Commit.entities.Presence;
 import com.example.Proyecto.First.Commit.entities.Skill;
 import com.example.Proyecto.First.Commit.entities.Student;
+import com.example.Proyecto.First.Commit.entities.User;
 import com.example.Proyecto.First.Commit.repository.SkillRepository;
 import com.example.Proyecto.First.Commit.repository.StudentRepository;
+import com.example.Proyecto.First.Commit.repository.UserRepository;
 import com.example.Proyecto.First.Commit.security.jwt.JwtRequestFilter;
+
 import io.jsonwebtoken.Header;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,66 +37,126 @@ public class StudentController {
     private final Logger log = LoggerFactory.getLogger(StudentController.class);
     private SkillRepository skillRepository;
     private StudentRepository studentRepository;
+    private UserRepository userRepository;
+    private StudentDAO studentDAO;
 
-    public StudentController(SkillRepository skillRepository, StudentRepository studentRepository) {
+    public StudentController(StudentDAO studentDAO, SkillRepository skillRepository, StudentRepository studentRepository, UserRepository userRepository) {
         this.skillRepository = skillRepository;
         this.studentRepository = studentRepository;
+        this.userRepository = userRepository;
+        this.studentDAO = studentDAO;
     }
 
     @GetMapping("/all")
     public List<Student> getAllStudent() {
-           return studentRepository.findAll();
+        return studentRepository.findAll();
+
+
     }
+
+    @GetMapping("/allUser")
+    public List<Student> getAllStudentUser() {
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+
+        return studentDAO.findAll(optionalUser.get());
+    }
+
 
     @GetMapping("/city/{nameCity}")
+    public Set<Student> getStudentByCityUser(@PathVariable String nameCity) {
+
+        List<Student> studentUserAll = studentRepository.findAll();
+        Set<Student> students = new HashSet<>();
+        for (Student student: studentUserAll) {
+            if (student.getCity().equalsIgnoreCase(nameCity))
+                students.add(student);
+        }
+                return students;
+    }
+
+    @GetMapping("/cityUser/{nameCity}")
     public List<Student> getStudentByCity(@PathVariable String nameCity) {
-        return studentRepository.findAll();
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+        List<Student> students= studentDAO.findCity(nameCity,optionalUser.get());
+
+        return students;
     }
 
-    @GetMapping("/presence/{typePresence}")
-    public List<Student> getStudentByPresence(@PathVariable Presence typePresence) {
-        return studentRepository.findAll();
+    @GetMapping("/presenceUser/{typePresence}")
+    public List<Student> getStudentByPresence(@PathVariable String typePresence) {
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+        Presence presc;
+        if (typePresence.equalsIgnoreCase("Remote"))
+            presc = Presence.Remote;
+        else if (typePresence.equalsIgnoreCase("Mixed"))
+            presc = Presence.Mixed;
+        else if (typePresence.equalsIgnoreCase("Presence"))
+            presc = Presence.Face_to_face;
+        else return null;
+
+
+        List<Student> students= studentDAO.findPresence(presc,optionalUser.get());
+        return students;
     }
 
-    @GetMapping("/country/{nameCountry}")
+    @GetMapping("/countryUser/{nameCountry}")
     public List<Student> getStudentByCountry(@PathVariable String nameCountry) {
-        return studentRepository.findAll();
+
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+        List<Student> students= studentDAO.findCountry(nameCountry,optionalUser.get());
+        return students;
     }
 
-    @GetMapping("/transfer/typePresence}")
-    public List<Student> getStudentByTransfery(@PathVariable Boolean typeTransfer) {
-        return studentRepository.findAll();
+    @GetMapping("/transferUser/{typeTransfer}")
+    public List<Student> getStudentByTransfery(@PathVariable String typeTransfer) {
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+
+        //todo lo convierte a falso sino es true ver si hay que arreglar
+
+        Boolean transfer = Boolean.parseBoolean(typeTransfer);
+        List<Student> students= studentDAO.findTransfer(transfer,optionalUser.get());
+        return students;
     }
 
-    @GetMapping("/skills")
+    @GetMapping("/skillsUser")
     public List<Student> getStudentBySkylls(@RequestBody Set<Skill> skills) {
-        return studentRepository.findAll();
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+        List<Student> students= studentDAO.findSkills(skills,optionalUser.get());
+        return students;
     }
 
     @PostMapping("create")
     public ResponseEntity<Student> createStudent( @RequestBody Student student) {
 
-
-
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
         if (student.getId() != null) {
+            log.warn("trying to create a stud with id");
+            return ResponseEntity.badRequest().build();
+        }
+        else{
 
             //TODO validar datos de entrada
 
-            Optional optStudent = skillRepository.findById(student.getId());
-            if (optStudent.isPresent()) {
-                log.warn("trying to create a student that exist");
-                return ResponseEntity.badRequest().build();
-            }
-        } else {
+            student.setUser(optionalUser.get());
             studentRepository.save(student);
             return ResponseEntity.ok(student);
+            }
+
         }
-        return ResponseEntity.ok(student);
-    }
+
+
 
     @PutMapping("update/{id}")
     public ResponseEntity<Student> updateStudent( @PathVariable Long id, @RequestBody Student student) {
 
+        //TODO validar datos de entrada y requisitos
         Optional optStudent = studentRepository.findById(id);
 
         if (optStudent.isPresent()) {
@@ -115,7 +183,11 @@ public class StudentController {
 
         Optional<Student> optionalStudent = studentRepository.findById(id);
         if (optionalStudent.isPresent()) {
-            studentRepository.delete(optionalStudent.get());
+            Student student = optionalStudent.get();
+            student.setSkills(null);
+            student.setUser(null);
+            studentRepository.save(student);
+            studentRepository.delete(student);
             return ResponseEntity.noContent().build();
         } else {
             log.warn("trying to delete a student that does not exist");

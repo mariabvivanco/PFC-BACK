@@ -30,25 +30,27 @@ public class Student {
 
     private Boolean transfer;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "student_skill",
-            joinColumns = {
-                    @JoinColumn(name = "student_id")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "skill_id") })
-
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE,
+            CascadeType.REFRESH, CascadeType.DETACH },
+            fetch = FetchType.EAGER)
     private Set<Skill> skills = new HashSet<Skill>();
 
     private String photo;
 
     private String document;
 
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE,
+            CascadeType.REFRESH, CascadeType.DETACH },
+        fetch = FetchType.EAGER)
+    private User user = null;
+
+
+
     public Student() {
     }
 
     public Student(Long id, String name, String country, String city, String phoneNumber, String email, Presence presence,
-                   Boolean transfer, Set<Skill> skills, String photo, String document) {
+                   Boolean transfer, Set<Skill> skills, String photo, String document, User user) {
         this.id = id;
         this.name = name;
         this.country = country;
@@ -60,6 +62,16 @@ public class Student {
         this.skills = skills;
         this.photo = photo;
         this.document = document;
+        this.user = user;
+
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Long getId() {

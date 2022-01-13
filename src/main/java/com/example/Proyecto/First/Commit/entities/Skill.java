@@ -1,5 +1,7 @@
 package com.example.Proyecto.First.Commit.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,6 +14,7 @@ public class Skill {
     @Column(length = 20, nullable = false)
     private String  skill;
 
+    @JsonIgnore
     private  Nivel nivel;
 
     public Skill() {

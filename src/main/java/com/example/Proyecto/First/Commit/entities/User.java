@@ -15,8 +15,6 @@ public class User {
     @Column(unique = true,  nullable = false, length = 50)
     private String email;
 
-   // @Column(unique = true,  nullable = false, length = 50)
-    //private String username;
 
     @Column(nullable = false)
     @JsonIgnore
@@ -29,21 +27,30 @@ public class User {
     private String name;
 
 
-    @OneToMany
-    private Set<Student> students;
+    /*@OneToMany(cascade = CascadeType.ALL)
+    private Set<Student> students;*/
 
 
 
     public User() {
     }
 
-    public User(long id, String email, String password, String phone, String name, Set<Student> students) {
+    public User(long id, String email, String password, String phone, String name) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.phone = phone;
         this.name = name;
-        this.students = students;
+
+    }
+
+    public User(String email, String password, String phone, String name) {
+
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.name = name;
+
     }
 
     public User(String email, String username, String password) {
@@ -98,11 +105,18 @@ public class User {
         this.name = name;
     }
 
-    public Set<Student> getStudents() {
-        return students;
-    }
 
-    public void setStudents(Set<Student> students) {
-        this.students = students;
-    }
+
+
+
+   /* public User addStudent(Student student){
+        Set<Student> studentsTemp = this.getStudents();
+        if (studentsTemp.contains(student))
+            return null;
+        else{
+            studentsTemp.add(student);
+            this.setStudents(studentsTemp);
+            return this;
+        }
+    }*/
 }

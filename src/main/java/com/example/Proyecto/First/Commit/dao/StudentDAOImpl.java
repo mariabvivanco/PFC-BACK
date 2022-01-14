@@ -1,6 +1,7 @@
 package com.example.Proyecto.First.Commit.dao;
 
 
+import com.example.Proyecto.First.Commit.dto.Filter;
 import com.example.Proyecto.First.Commit.entities.Presence;
 import com.example.Proyecto.First.Commit.entities.Skill;
 import com.example.Proyecto.First.Commit.entities.Student;
@@ -72,10 +73,7 @@ public class StudentDAOImpl implements StudentDAO {
                 for (Skill skillToCompare: student.getSkills()){
                     if (skillToCompare.getSkill().equalsIgnoreCase(skillToFound.getSkill()))
                         countFound++;
-
-
                 }
-
 
             }
             if (countFound==skills.size())
@@ -99,6 +97,42 @@ public class StudentDAOImpl implements StudentDAO {
         query.setParameter("transfer", transfer);
         List<Student> students = query.list();
         return students;
+    }
+
+
+    @Override
+    public List<Student> findAllFilter(Filter filter, User user){
+        Query<Student> query = session.createQuery("from Student where (user = :user) and " +
+                "(transfer = :transfer or :transfer is null) and" +
+                "(city = :city or :city is null) and" +
+                "(country = :country or :country is null) and" +
+                "(presence = :presence or :presence is null)", Student.class);
+        query.setParameter("user", user);
+        query.setParameter("transfer", filter.getTransfer());
+        query.setParameter("city", filter.getCity());
+        query.setParameter("country", filter.getCountry());
+        query.setParameter("presence", filter.getPresence());
+        List<Student> students = query.list();
+        if (!(filter.getSkills()==null)){
+            List<Student> studentsFind = new ArrayList();
+            for (Student student:students){
+
+                int countFound=0;
+                for (Skill skillToFound: filter.getSkills()){
+                    for (Skill skillToCompare: student.getSkills()){
+                        if (skillToCompare.getSkill().equalsIgnoreCase(skillToFound.getSkill()))
+                            countFound++;
+                    }
+
+                }
+                if (countFound==filter.getSkills().size())
+                    studentsFind.add(student);
+
+            }
+            return studentsFind;
+        }
+        return students;
+
     }
 
 

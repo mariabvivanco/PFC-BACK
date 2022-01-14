@@ -1,5 +1,6 @@
 package com.example.Proyecto.First.Commit.dao;
 
+import com.example.Proyecto.First.Commit.dto.Filter;
 import com.example.Proyecto.First.Commit.entities.Presence;
 import com.example.Proyecto.First.Commit.entities.Skill;
 import com.example.Proyecto.First.Commit.entities.Student;
@@ -17,6 +18,7 @@ public interface StudentDAO {
     List<Student> findSkills(Set<Skill> skills, User user);
     List<Student> findPresence(Presence presence, User user);
     List<Student> findTransfer(Boolean transfer, User user);
+    List<Student> findAllFilter(Filter filter, User user);
 
 
 

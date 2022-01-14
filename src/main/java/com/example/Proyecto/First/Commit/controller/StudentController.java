@@ -1,6 +1,7 @@
 package com.example.Proyecto.First.Commit.controller;
 
 import com.example.Proyecto.First.Commit.dao.StudentDAO;
+import com.example.Proyecto.First.Commit.dto.Filter;
 import com.example.Proyecto.First.Commit.dto.StudentDTO;
 import com.example.Proyecto.First.Commit.entities.Presence;
 import com.example.Proyecto.First.Commit.entities.Skill;
@@ -122,6 +123,16 @@ public class StudentController {
         List<Student> students= studentDAO.findSkills(skills,optionalUser.get());
         return students;
     }
+
+    @GetMapping("/allFilter")
+    public List<Student> getStudentAllFilter(@RequestBody Filter filter){
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+        List<Student> students= studentDAO.findAllFilter(filter,optionalUser.get());
+        return students;
+
+    }
+
 
     @PostMapping("create")
     public ResponseEntity<Student> createStudent(@RequestBody StudentDTO student) throws Exception {

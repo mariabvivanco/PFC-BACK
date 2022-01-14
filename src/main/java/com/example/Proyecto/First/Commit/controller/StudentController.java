@@ -1,6 +1,7 @@
 package com.example.Proyecto.First.Commit.controller;
 
 import com.example.Proyecto.First.Commit.dao.StudentDAO;
+import com.example.Proyecto.First.Commit.dto.StudentDTO;
 import com.example.Proyecto.First.Commit.entities.Presence;
 import com.example.Proyecto.First.Commit.entities.Skill;
 import com.example.Proyecto.First.Commit.entities.Student;
@@ -8,23 +9,13 @@ import com.example.Proyecto.First.Commit.entities.User;
 import com.example.Proyecto.First.Commit.repository.SkillRepository;
 import com.example.Proyecto.First.Commit.repository.StudentRepository;
 import com.example.Proyecto.First.Commit.repository.UserRepository;
-import com.example.Proyecto.First.Commit.security.jwt.JwtRequestFilter;
-
-import io.jsonwebtoken.Header;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
+import com.example.Proyecto.First.Commit.security.service.student.StudentService;
+import com.example.Proyecto.First.Commit.security.service.student.StudentServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +31,8 @@ public class StudentController {
     private UserRepository userRepository;
     private StudentDAO studentDAO;
 
-    public StudentController(StudentDAO studentDAO, SkillRepository skillRepository, StudentRepository studentRepository, UserRepository userRepository) {
+    public StudentController(StudentDAO studentDAO, SkillRepository skillRepository, StudentRepository studentRepository,
+                             UserRepository userRepository) {
         this.skillRepository = skillRepository;
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
@@ -132,7 +124,9 @@ public class StudentController {
     }
 
     @PostMapping("create")
-    public ResponseEntity<Student> createStudent( @RequestBody Student student) {
+    public ResponseEntity<Student> createStudent(@RequestBody StudentDTO student) throws Exception {
+        StudentService studentService = new StudentServiceImpl();
+        Student studentTemp = new Student();
 
         String userName= SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> optionalUser = userRepository.findByemail(userName);
@@ -142,11 +136,15 @@ public class StudentController {
         }
         else{
 
-            //TODO validar datos de entrada
+            if (!(studentService.validateStudentCreate(student))){
+                log.warn("input data error");
+                return ResponseEntity.badRequest().build();
+            }
+            studentTemp=studentService.convertStudentCreate(student);
+            studentTemp.setUser(optionalUser.get());
 
-            student.setUser(optionalUser.get());
-            studentRepository.save(student);
-            return ResponseEntity.ok(student);
+            studentRepository.save(studentTemp);
+            return ResponseEntity.ok(studentTemp);
             }
 
         }

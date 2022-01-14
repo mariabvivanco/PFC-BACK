@@ -27,8 +27,8 @@ public class User {
     private String name;
 
 
-    /*@OneToMany(cascade = CascadeType.ALL)
-    private Set<Student> students;*/
+    @Column
+    private String code;
 
 
 
@@ -105,11 +105,15 @@ public class User {
         this.name = name;
     }
 
+    public String getCode() {
+        return code;
+    }
 
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-
-
-   /* public User addStudent(Student student){
+/* public User addStudent(Student student){
         Set<Student> studentsTemp = this.getStudents();
         if (studentsTemp.contains(student))
             return null;

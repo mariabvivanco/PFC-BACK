@@ -1,23 +1,34 @@
 package com.example.Proyecto.First.Commit;
 
 import com.example.Proyecto.First.Commit.dao.StudentDAO;
-import com.example.Proyecto.First.Commit.dao.StudentDAOImpl;
 import com.example.Proyecto.First.Commit.entities.*;
 import com.example.Proyecto.First.Commit.repository.SkillRepository;
 import com.example.Proyecto.First.Commit.repository.StudentRepository;
 import com.example.Proyecto.First.Commit.repository.UserRepository;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+
+import com.example.Proyecto.First.Commit.security.service.login.SendEmail;
+import com.example.Proyecto.First.Commit.security.service.login.SendEmailImpl;
+import com.example.Proyecto.First.Commit.security.service.uploadfile.UploadFile;
+import com.example.Proyecto.First.Commit.security.service.uploadfile.UploadFileImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootApplication
 public class ProyectoFirstCommitApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		ApplicationContext context = SpringApplication.run(ProyectoFirstCommitApplication.class, args);
 		UserRepository userRepository = context.getBean(UserRepository.class);
 		StudentRepository studentRepository = context.getBean(StudentRepository.class);
@@ -85,10 +96,6 @@ public class ProyectoFirstCommitApplication {
 
 
 
-
-
-
-
 		Student student1 = new Student(null,"María Beatriz Vivanco marrero","España", "Madrid",
 			"+3464100000","mariab.vivanco@gmail.com", Presence.Mixed, false,
 			fullstackj,null,null,user);
@@ -130,8 +137,25 @@ public class ProyectoFirstCommitApplication {
 
 
 
+		/*UploadFile uploadImage = new UploadFileImpl();
 
 
+		File file = new File("C:\\Users\\Betty\\Desktop\\Fotos\\Foto3.jpeg");
+		Path path = Paths.get("C:\\Users\\Betty\\Desktop\\Fotos\\Foto3.jpeg");
+		String originalFileName = "Foto3.jpeg";
+		String name = "Foto3.jpeg";
+		String contentType = "image/jpeg";
+
+		byte[] content = null;
+		try {
+			content = Files.readAllBytes(path);
+		} catch (final IOException e) {
+		}
+		MultipartFile result = new MockMultipartFile(name,
+				originalFileName, contentType, content);
+
+
+		uploadImage.uploadImage(result);*/
 
 
 

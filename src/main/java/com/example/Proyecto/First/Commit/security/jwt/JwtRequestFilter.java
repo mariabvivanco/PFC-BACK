@@ -1,6 +1,6 @@
 package com.example.Proyecto.First.Commit.security.jwt;
 
-import com.example.Proyecto.First.Commit.security.service.UserDetailsServiceImpl;
+import com.example.Proyecto.First.Commit.service.UserDetailsServiceImpl;
 //import com.example.demo.security.service.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

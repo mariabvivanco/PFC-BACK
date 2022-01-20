@@ -19,6 +19,9 @@ public interface StudentDAO {
     List<Student> findPresence(Presence presence, User user);
     List<Student> findTransfer(Boolean transfer, User user);
     List<Student> findAllFilter(Filter filter, User user);
+    List<Student> findKeyWord(String keyWord, User user);
+    List<String > findCities(Long id);
+    List<String> findCountries(Long id);
 
 
 

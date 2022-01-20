@@ -6,13 +6,13 @@ import com.example.Proyecto.First.Commit.entities.Skill;
 import java.util.Set;
 
 public class Filter {
-    Set<Skill> skills;
+    Set<String> skills;
     String country;
     String city;
     Presence presence;
     Boolean transfer;
 
-    public Filter(Set<Skill> skills, String country, String city, Presence presence, Boolean transfer) {
+    public Filter(Set<String> skills, String country, String city, Presence presence, Boolean transfer) {
         this.skills = skills;
         this.country = country;
         this.city = city;
@@ -20,7 +20,7 @@ public class Filter {
         this.transfer = transfer;
     }
 
-    public Set<Skill> getSkills() {
+    public Set<String> getSkills() {
         return skills;
     }
 

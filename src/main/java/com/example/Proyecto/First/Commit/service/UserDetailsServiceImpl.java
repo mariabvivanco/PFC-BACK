@@ -1,4 +1,4 @@
-package com.example.Proyecto.First.Commit.security.service;
+package com.example.Proyecto.First.Commit.service;
 
 import com.example.Proyecto.First.Commit.entities.User;
 import com.example.Proyecto.First.Commit.repository.UserRepository;

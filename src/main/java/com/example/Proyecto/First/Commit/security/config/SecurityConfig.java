@@ -2,7 +2,7 @@ package com.example.Proyecto.First.Commit.security.config;
 
 import com.example.Proyecto.First.Commit.security.jwt.JwtAuthEntryPoint;
 import com.example.Proyecto.First.Commit.security.jwt.JwtRequestFilter;
-import com.example.Proyecto.First.Commit.security.service.UserDetailsServiceImpl;
+import com.example.Proyecto.First.Commit.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

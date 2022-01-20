@@ -11,6 +11,7 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -106,21 +107,22 @@ public class StudentDAOImpl implements StudentDAO {
                 "(transfer = :transfer or :transfer is null) and" +
                 "(city = :city or :city is null) and" +
                 "(country = :country or :country is null) and" +
-                "(presence = :presence or :presence is null)", Student.class);
+                "(presence = :presence or (presence = :presenceM) or :presence is null)", Student.class);
         query.setParameter("user", user);
         query.setParameter("transfer", filter.getTransfer());
         query.setParameter("city", filter.getCity());
         query.setParameter("country", filter.getCountry());
         query.setParameter("presence", filter.getPresence());
+        query.setParameter("presenceM", Presence.Mixed);
         List<Student> students = query.list();
         if (!(filter.getSkills()==null)){
             List<Student> studentsFind = new ArrayList();
             for (Student student:students){
 
                 int countFound=0;
-                for (Skill skillToFound: filter.getSkills()){
+                for (String skillToFound: filter.getSkills()){
                     for (Skill skillToCompare: student.getSkills()){
-                        if (skillToCompare.getSkill().equalsIgnoreCase(skillToFound.getSkill()))
+                        if (skillToCompare.getSkill().equalsIgnoreCase(skillToFound))
                             countFound++;
                     }
 
@@ -133,6 +135,37 @@ public class StudentDAOImpl implements StudentDAO {
         }
         return students;
 
+    }
+
+    @Override
+    public List<Student> findKeyWord(String keyWord, User user){
+        Query<Student> query = session.createQuery("from Student where (user = :user) and ((name LIKE :keyWord)or(email LIKE :keyWord)) ", Student.class);
+
+        String key = ("%"+keyWord+"%");
+        query.setParameter("keyWord", key);
+        query.setParameter("user", user);
+
+        List<Student> students = query.list();
+        return students;
+
+    }
+
+
+    @Override
+    public List<String> findCities(Long id){
+
+        List<String> cities = session.createNativeQuery("SELECT city FROM Student \n" +
+                "     GROUP BY city, user_id \n" +
+                "     HAVING COUNT(*)>=1 and user_id=:id").setParameter("id",id).list();
+        return cities;
+    }
+
+    @Override
+    public List<String> findCountries(Long id){
+        List<String> countries = session.createNativeQuery("SELECT country FROM Student \n" +
+                "     GROUP BY country, user_id \n" +
+                "     HAVING COUNT(*)>=1 and user_id=:id").setParameter("id",id).list();
+        return countries;
     }
 
 

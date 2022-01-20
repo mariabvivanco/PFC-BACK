@@ -1,5 +1,7 @@
 package com.example.Proyecto.First.Commit.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,6 +10,7 @@ import java.util.Set;
 public class Student {
 
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -42,6 +45,7 @@ public class Student {
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE,
             CascadeType.REFRESH, CascadeType.DETACH },
         fetch = FetchType.EAGER)
+    @JsonIgnore
     private User user = null;
 
 

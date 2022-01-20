@@ -7,8 +7,8 @@ import com.example.Proyecto.First.Commit.entities.User;
 import com.example.Proyecto.First.Commit.repository.SkillRepository;
 import com.example.Proyecto.First.Commit.repository.StudentRepository;
 import com.example.Proyecto.First.Commit.repository.UserRepository;
-import com.example.Proyecto.First.Commit.security.service.login.SendEmail;
-import com.example.Proyecto.First.Commit.security.service.login.SendEmailImpl;
+import com.example.Proyecto.First.Commit.service.login.SendEmail;
+import com.example.Proyecto.First.Commit.service.login.SendEmailImpl;
 import com.sparkpost.exception.SparkPostException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class UserController {
             this.encoder = encoder;
         }
 
-        SendEmail sendEmail=  new SendEmailImpl();
+
 
         @GetMapping("/all")
         public List<User> getAllStudent() {
@@ -46,14 +46,15 @@ public class UserController {
         }
 
 
-        @GetMapping("/forgPassword")
-         public ResponseEntity<String> forgPassword(@RequestBody String email) throws SparkPostException {
+        @PostMapping("/forgPassword")
+         public ResponseEntity<String> forgPassword(@RequestBody ChangePasswordDTO changePasswordDTO) throws SparkPostException {
 
-            Optional<User> user = userRepository.findByemail(email);
+            Optional<User> user = userRepository.findByemail(changePasswordDTO.getEmail());
             if (user.isPresent()) {
                 String code = String.valueOf(Math.random() * 100000).substring(0, 5);
                 user.get().setCode(code);
                 userRepository.save(user.get());
+                SendEmail sendEmail = new SendEmailImpl();
 
                 sendEmail.sendEmail(code, user.get().getEmail());
                 return ResponseEntity.ok("ok");
@@ -66,7 +67,7 @@ public class UserController {
         public ResponseEntity<String> verifyCode(@RequestBody VerifyCodeDTO verifyCodeDTO)  {
 
             Optional<User> optionalUser = userRepository.findByemail(verifyCodeDTO.getEmail());
-            if (optionalUser.isPresent()) {
+            if ((verifyCodeDTO.getCode()!="")&&(optionalUser.isPresent())) {
                 if (optionalUser.get().getCode().equals(verifyCodeDTO.getCode())){
 
                     optionalUser.get().setCode("ok");
@@ -75,7 +76,7 @@ public class UserController {
                 }
 
             }
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.noContent().build();
 
         }
 

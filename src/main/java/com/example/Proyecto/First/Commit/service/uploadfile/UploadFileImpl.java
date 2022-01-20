@@ -1,4 +1,4 @@
-package com.example.Proyecto.First.Commit.security.service.uploadfile;
+package com.example.Proyecto.First.Commit.service.uploadfile;
 
 
 import com.cloudinary.Cloudinary;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
-public class UploadFileImpl implements UploadFile {
+public class UploadFileImpl implements UploadFile{
 
     private final String cloudName = System.getenv().get("CLOUDINARY_CLOUD_NAME");
     private final String apiKey = System.getenv("CLOUDINARY_API_KEY");

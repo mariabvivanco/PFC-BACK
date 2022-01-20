@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/skill")
@@ -24,11 +23,16 @@ public class SkillController {
 
 
     @GetMapping("/all")
-    public List<Skill> getAllSkill() {
+    public ResponseEntity<Set<String>> getAllSkill() {
         if (skillRepository == null) {
-            return null;
+            return ResponseEntity.noContent().build();
         }
-        return skillRepository.findAll();
+        Set<String> skills= new HashSet<>();
+        for (Skill skill:skillRepository.findAll()){
+            skills.add(skill.getSkill()); }
+
+
+        return ResponseEntity.ok(skills);
     }
 
     @PostMapping("create")

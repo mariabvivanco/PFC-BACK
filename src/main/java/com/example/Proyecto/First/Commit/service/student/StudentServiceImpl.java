@@ -1,11 +1,10 @@
-package com.example.Proyecto.First.Commit.security.service.student;
+package com.example.Proyecto.First.Commit.service.student;
 
 import com.example.Proyecto.First.Commit.dto.StudentDTO;
 import com.example.Proyecto.First.Commit.entities.Student;
-import com.example.Proyecto.First.Commit.security.service.uploadfile.UploadFile;
+import com.example.Proyecto.First.Commit.service.uploadfile.UploadFile;
 
-public class StudentServiceImpl implements StudentService {
-
+public class StudentServiceImpl implements StudentService{
     UploadFile uploadFile;
 
     @Override

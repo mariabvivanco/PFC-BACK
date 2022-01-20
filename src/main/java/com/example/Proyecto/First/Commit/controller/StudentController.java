@@ -1,6 +1,7 @@
 package com.example.Proyecto.First.Commit.controller;
 
 import com.example.Proyecto.First.Commit.dao.StudentDAO;
+import com.example.Proyecto.First.Commit.dto.Filter;
 import com.example.Proyecto.First.Commit.dto.StudentDTO;
 import com.example.Proyecto.First.Commit.entities.Presence;
 import com.example.Proyecto.First.Commit.entities.Skill;
@@ -9,8 +10,8 @@ import com.example.Proyecto.First.Commit.entities.User;
 import com.example.Proyecto.First.Commit.repository.SkillRepository;
 import com.example.Proyecto.First.Commit.repository.StudentRepository;
 import com.example.Proyecto.First.Commit.repository.UserRepository;
-import com.example.Proyecto.First.Commit.security.service.student.StudentService;
-import com.example.Proyecto.First.Commit.security.service.student.StudentServiceImpl;
+import com.example.Proyecto.First.Commit.service.student.StudentService;
+import com.example.Proyecto.First.Commit.service.student.StudentServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +41,9 @@ public class StudentController {
     }
 
     @GetMapping("/all")
-    public List<Student> getAllStudent() {
-        return studentRepository.findAll();
-
+    public ResponseEntity<List<Student>> getAllStudent() {
+        List<Student> students = studentRepository.findAll();
+        return ResponseEntity.ok(students);
 
     }
 
@@ -122,6 +123,45 @@ public class StudentController {
         List<Student> students= studentDAO.findSkills(skills,optionalUser.get());
         return students;
     }
+
+    @PostMapping("/allFilter")
+    public ResponseEntity<List<Student> >getStudentAllFilter(@RequestBody Filter filter){
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+        List<Student> students= studentDAO.findAllFilter(filter,optionalUser.get());
+        return ResponseEntity.ok(students);
+
+    }
+
+    @GetMapping("/keyWord")
+    public ResponseEntity<List<Student> >getStudentAllFilter(@RequestParam String keyWord){
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+        List<Student> students= studentDAO.findKeyWord(keyWord, optionalUser.get());
+        return ResponseEntity.ok(students);
+
+    }
+
+    @GetMapping("/city")
+    public ResponseEntity<List<String> >getCitiesforUser(){
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+        List<String> cities= studentDAO.findCities(optionalUser.get().getId());
+        return ResponseEntity.ok(cities);
+
+    }
+
+    @GetMapping("/country")
+    public ResponseEntity<List<String> >getCountriesforUser(){
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+        List<String> cities= studentDAO.findCountries(optionalUser.get().getId());
+        return ResponseEntity.ok(cities);
+
+    }
+
+
+
 
     @PostMapping("create")
     public ResponseEntity<Student> createStudent(@RequestBody StudentDTO student) throws Exception {

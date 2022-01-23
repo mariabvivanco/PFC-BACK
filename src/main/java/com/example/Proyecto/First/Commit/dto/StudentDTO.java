@@ -16,12 +16,12 @@ public class StudentDTO {
     private String email;
     private Presence presence;
     private Boolean transfer;
-    private Set<Skill> skills = new HashSet<Skill>();
+    private Set<String> skills = new HashSet<String>();
     private MultipartFile photo;
     private MultipartFile document;
 
     public StudentDTO(Long id, String name, String country, String city, String phoneNumber, String email, Presence presence,
-                      Boolean transfer, Set<Skill> skills, MultipartFile photo, MultipartFile document) {
+                      Boolean transfer, Set<String> skills, MultipartFile photo, MultipartFile document) {
         this.id = id;
         this.name = name;
         this.country = country;
@@ -99,11 +99,11 @@ public class StudentDTO {
         this.transfer = transfer;
     }
 
-    public Set<Skill> getSkills() {
+    public Set<String> getSkills() {
         return skills;
     }
 
-    public void setSkills(Set<Skill> skills) {
+    public void setSkills(Set<String> skills) {
         this.skills = skills;
     }
 

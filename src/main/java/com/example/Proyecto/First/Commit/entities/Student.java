@@ -10,7 +10,7 @@ import java.util.Set;
 public class Student {
 
     @Id
-    @JsonIgnore
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -23,10 +23,10 @@ public class Student {
     @Column(length = 20)
     private String city;
 
-    @Column(name= "phone_number", unique = true, length = 15)
+    @Column(name= "phone_number",  length = 15)
     private String phoneNumber;
 
-    @Column(unique = true, nullable = false, length = 50)
+    @Column( length = 50)
     private String email;
 
     private Presence presence;

@@ -22,6 +22,7 @@ public interface StudentDAO {
     List<Student> findKeyWord(String keyWord, User user);
     List<String > findCities(Long id);
     List<String> findCountries(Long id);
+    Skill findSkill(String skill);
 
 
 

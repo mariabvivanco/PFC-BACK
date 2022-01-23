@@ -2,10 +2,7 @@ package com.example.Proyecto.First.Commit.dao;
 
 
 import com.example.Proyecto.First.Commit.dto.Filter;
-import com.example.Proyecto.First.Commit.entities.Presence;
-import com.example.Proyecto.First.Commit.entities.Skill;
-import com.example.Proyecto.First.Commit.entities.Student;
-import com.example.Proyecto.First.Commit.entities.User;
+import com.example.Proyecto.First.Commit.entities.*;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
@@ -30,6 +27,16 @@ public class StudentDAOImpl implements StudentDAO {
 
     public StudentDAOImpl(Session session){
         this.session = session;
+    }
+
+    @Override
+    public Skill findSkill(String skill){
+        Query<Skill> query = session.createQuery("from Skill where skill = :skill and nivel = :nivel", Skill.class);
+
+        query.setParameter("skill", skill);
+        query.setParameter("nivel", Nivel.JUNIOR);
+        Skill skillFound = query.getSingleResult();
+        return skillFound;
     }
 
     @Override
@@ -139,7 +146,8 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public List<Student> findKeyWord(String keyWord, User user){
-        Query<Student> query = session.createQuery("from Student where (user = :user) and ((name LIKE :keyWord)or(email LIKE :keyWord)) ", Student.class);
+        Query<Student> query = session.createQuery("from Student where (user = :user) and ((UPPER(name) " +
+                "LIKE UPPER(:keyWord))or(UPPER(email) LIKE UPPER(:keyWord))) ", Student.class);
 
         String key = ("%"+keyWord+"%");
         query.setParameter("keyWord", key);

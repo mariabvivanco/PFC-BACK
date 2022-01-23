@@ -12,11 +12,14 @@ import com.example.Proyecto.First.Commit.repository.StudentRepository;
 import com.example.Proyecto.First.Commit.repository.UserRepository;
 import com.example.Proyecto.First.Commit.service.student.StudentService;
 import com.example.Proyecto.First.Commit.service.student.StudentServiceImpl;
+import com.example.Proyecto.First.Commit.service.uploadfile.UploadFile;
+import com.example.Proyecto.First.Commit.service.uploadfile.UploadFileImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,12 +35,14 @@ public class StudentController {
     private UserRepository userRepository;
     private StudentDAO studentDAO;
 
+
     public StudentController(StudentDAO studentDAO, SkillRepository skillRepository, StudentRepository studentRepository,
                              UserRepository userRepository) {
         this.skillRepository = skillRepository;
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.studentDAO = studentDAO;
+
     }
 
     @GetMapping("/all")
@@ -165,29 +170,49 @@ public class StudentController {
 
     @PostMapping("create")
     public ResponseEntity<Student> createStudent(@RequestBody StudentDTO student) throws Exception {
-        StudentService studentService = new StudentServiceImpl();
-        Student studentTemp = new Student();
 
-        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Student studentTemp = new Student();
+        StudentService studentService = new StudentServiceImpl();
+        Set<Skill> skills = new HashSet<>();
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> optionalUser = userRepository.findByemail(userName);
         if (student.getId() != null) {
             log.warn("trying to create a stud with id");
             return ResponseEntity.badRequest().build();
-        }
-        else{
+        } else {
 
-            if (!(studentService.validateStudentCreate(student))){
+            if (!(studentService.validateStudentCreate(student))) {
                 log.warn("input data error");
                 return ResponseEntity.badRequest().build();
             }
-            studentTemp=studentService.convertStudentCreate(student);
+
+            if (student.getSkills() == null)
+                studentTemp = studentService.convertStudentCreate(student, null);
+            else
+                for (String skillNew : student.getSkills()) {
+                    Skill skill = new Skill();
+                    skills.add(studentDAO.findSkill(skillNew));
+                }
+            studentTemp = studentService.convertStudentCreate(student, skills);
             studentTemp.setUser(optionalUser.get());
 
             studentRepository.save(studentTemp);
             return ResponseEntity.ok(studentTemp);
-            }
 
         }
+    }
+
+    @PostMapping("create/document/{id}")
+    public ResponseEntity<Student> createStudentDocument(@PathVariable Long id, @RequestBody MultipartFile document) throws Exception {
+        Optional<Student> studentOptional = studentRepository.findById(id);
+        UploadFile uploadFile = new UploadFileImpl();
+        studentOptional.get().setDocument(uploadFile.uploadPdf(document));
+        studentRepository.save(studentOptional.get());
+        return ResponseEntity.ok(studentOptional.get());
+        }
+
+
 
 
 

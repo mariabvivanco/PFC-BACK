@@ -5,18 +5,18 @@ import com.example.Proyecto.First.Commit.entities.Skill;
 
 import java.util.Set;
 
-public class Filter {
-    Set<String> skills;
+public class FilterPrueba {
+    Set<Skill> skills;
     String country;
     String city;
     Presence presence;
     Boolean transfer;
 
 
-    public Filter() {
+    public FilterPrueba() {
     }
 
-    public Filter(Set<String> skills, String country, String city, Presence presence, Boolean transfer) {
+    public FilterPrueba(Set<Skill> skills, String country, String city, Presence presence, Boolean transfer) {
         this.skills = skills;
         this.country = country;
         this.city = city;
@@ -24,7 +24,7 @@ public class Filter {
         this.transfer = transfer;
     }
 
-    public Set<String> getSkills() {
+    public Set<Skill> getSkills() {
         return skills;
     }
 
@@ -44,7 +44,7 @@ public class Filter {
         return transfer;
     }
 
-    public void setSkills(Set<String> skills) {
+    public void setSkills(Set<Skill> skills) {
         this.skills = skills;
     }
 

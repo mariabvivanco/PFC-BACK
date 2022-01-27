@@ -69,7 +69,7 @@ public class StudentServiceImpl implements StudentService{
     }
 
     @Override
-    public Student convertStudentUpdate(StudentDTO studentNew, Student studentOld) throws Exception {
+    public Student convertStudentUpdate(StudentDTO studentNew, Student studentOld)  {
         Student studentTemp = studentOld;
         Set<Skill> skills = new HashSet<>();
         if (studentNew.getCity()!=null)
@@ -84,19 +84,17 @@ public class StudentServiceImpl implements StudentService{
             studentTemp.setPresence(studentNew.getPresence());
         if (studentNew.getEmail()!=null)
             studentTemp.setEmail(studentNew.getEmail());
-        if (studentNew.getSkills()!=null)
+        if (studentNew.getSkills()!=null){
             for (String skillNew: studentNew.getSkills()){
                 Skill skill = new Skill();
                 skill.setNivel(Nivel.JUNIOR);
                 skill.setSkill(skillNew);
                 skills.add(skill);
             }
+            studentTemp.setSkills(skills);}
         if (studentNew.getName()!=null)
             studentTemp.setName(studentNew.getName());
-        if (studentNew.getPhoto()!=null)
-            studentTemp.setPhoto(uploadFile.uploadImage(studentNew.getPhoto()));
-        if (studentNew.getDocument()!=null)
-            studentTemp.setDocument(uploadFile.uploadPdf(studentNew.getDocument()));
+
         return studentTemp;
     }
 }

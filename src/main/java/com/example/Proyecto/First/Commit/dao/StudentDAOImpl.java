@@ -2,9 +2,14 @@ package com.example.Proyecto.First.Commit.dao;
 
 
 import com.example.Proyecto.First.Commit.dto.Filter;
+import com.example.Proyecto.First.Commit.dto.FilterPrueba;
+import com.example.Proyecto.First.Commit.dto.StudentPage;
 import com.example.Proyecto.First.Commit.entities.*;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.annotations.FlushModeType;
 import org.hibernate.query.Query;
+import org.springframework.data.jpa.repository.support.QueryHints;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -110,17 +115,21 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public List<Student> findAllFilter(Filter filter, User user){
+        session.clear();
         Query<Student> query = session.createQuery("from Student where (user = :user) and " +
                 "(transfer = :transfer or :transfer is null) and" +
                 "(city = :city or :city is null) and" +
                 "(country = :country or :country is null) and" +
                 "(presence = :presence or (presence = :presenceM) or :presence is null)", Student.class);
+
         query.setParameter("user", user);
         query.setParameter("transfer", filter.getTransfer());
         query.setParameter("city", filter.getCity());
         query.setParameter("country", filter.getCountry());
         query.setParameter("presence", filter.getPresence());
         query.setParameter("presenceM", Presence.Mixed);
+        query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
         List<Student> students = query.list();
         if (!(filter.getSkills()==null)){
             List<Student> studentsFind = new ArrayList();
@@ -143,6 +152,79 @@ public class StudentDAOImpl implements StudentDAO {
         return students;
 
     }
+
+
+    @Override
+    public List<Student> findAllFilterPage(Filter filter, User user, Integer page, Integer perPage) {
+        session.clear();
+        Query<Student> query = session.createQuery("from Student where (user = :user) and " +
+                "(transfer = :transfer or :transfer is null) and" +
+                "(city = :city or :city is null) and" +
+                "(country = :country or :country is null) and" +
+                "(presence = :presence or (presence = :presenceM) or :presence is null)", Student.class);
+
+        query.setParameter("user", user);
+        query.setParameter("transfer", filter.getTransfer());
+        query.setParameter("city", filter.getCity());
+        query.setParameter("country", filter.getCountry());
+        query.setParameter("presence", filter.getPresence());
+        query.setParameter("presenceM", Presence.Mixed);
+        query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+        List<Student> students = query.list();
+        if (!(filter.getSkills() == null)) {
+            List<Student> studentsFind = new ArrayList();
+            for (Student student : students) {
+
+                int countFound = 0;
+                for (String skillToFound : filter.getSkills()) {
+                    for (Skill skillToCompare : student.getSkills()) {
+                        if (skillToCompare.getSkill().equalsIgnoreCase(skillToFound))
+                            countFound++;
+                    }
+
+                }
+                if (countFound == filter.getSkills().size())
+                    studentsFind.add(student);
+
+            }
+            students = studentsFind;
+        }
+
+
+        /* calcular el numero de página
+
+        String countHQL = "query";
+        Long countResult = (Long) session.createQuery(countHQL).uniqueResult();
+        int lastPageNum = (int) Math.ceil(countResult / perPage) ;
+
+        // recuperar empleados de la última página
+        Query query2 = session.createQuery("");
+        query2.setFirstResult((page - 1) * perPage);
+        query2.setMaxResults((page - 1) * perPage+perPage));
+        List<Student> studentsperPage= query2.list();
+
+        return studentsperPage;*/
+
+            int lastPageNum = (int) Math.ceil(students.size() / perPage);
+            List<Student> studentsDev;
+
+            if (students.size() > (page - 1) * perPage + perPage)
+
+                studentsDev = students.subList((page - 1) * perPage, (page - 1) * perPage + perPage);
+
+            else
+
+                studentsDev = students.subList((page - 1) * perPage, students.size());
+
+            studentsDev.get(0).setDocument(Integer.toString(students.size()));
+
+
+            return studentsDev;
+
+    }
+
+
 
     @Override
     public List<Student> findKeyWord(String keyWord, User user){

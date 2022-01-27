@@ -60,6 +60,15 @@ public class StudentController {
         return studentDAO.findAll(optionalUser.get());
     }
 
+    @GetMapping("/one/{id}")
+    public ResponseEntity<Student> getStudentByCityUser(@PathVariable Long id) {
+
+        Optional<Student> optionalStudent = studentRepository.findById(id);
+        if (optionalStudent.isPresent())
+            return ResponseEntity.ok(optionalStudent.get());
+        else return ResponseEntity.notFound().build();
+    }
+
 
     @GetMapping("/city/{nameCity}")
     public Set<Student> getStudentByCityUser(@PathVariable String nameCity) {
@@ -138,6 +147,15 @@ public class StudentController {
 
     }
 
+    @PostMapping("/allFilterPerPage/{page}/{perPage}")
+    public ResponseEntity<List<Student> >getStudentAllFilterPerPage(@RequestBody Filter filter, @PathVariable Integer page, @PathVariable Integer perPage  ){
+        String userName= SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> optionalUser = userRepository.findByemail(userName);
+        List<Student> students= studentDAO.findAllFilterPage(filter,optionalUser.get(),page,perPage);
+        return ResponseEntity.ok(students);
+
+    }
+
     @GetMapping("/keyWord")
     public ResponseEntity<List<Student> >getStudentAllFilter(@RequestParam String keyWord){
         String userName= SecurityContextHolder.getContext().getAuthentication().getName();
@@ -164,7 +182,6 @@ public class StudentController {
         return ResponseEntity.ok(cities);
 
     }
-
 
 
 
@@ -208,29 +225,60 @@ public class StudentController {
         Optional<Student> studentOptional = studentRepository.findById(id);
         UploadFile uploadFile = new UploadFileImpl();
         studentOptional.get().setDocument(uploadFile.uploadPdf(document));
-        studentRepository.save(studentOptional.get());
+        studentRepository.saveAndFlush(studentOptional.get());
+        System.out.println("creada documento ok");
         return ResponseEntity.ok(studentOptional.get());
         }
 
-
+    @PostMapping("create/photo/{id}")
+    public ResponseEntity<Student> createStudentPhoto(@PathVariable Long id, @RequestBody MultipartFile photo) throws Exception {
+        Optional<Student> studentOptional = studentRepository.findById(id);
+        UploadFile uploadFile = new UploadFileImpl();
+        studentOptional.get().setPhoto(uploadFile.uploadImage(photo));
+        studentRepository.saveAndFlush(studentOptional.get());
+        System.out.println("creada foto ok");
+        return ResponseEntity.ok(studentOptional.get());
+    }
 
 
 
     @PutMapping("update/{id}")
-    public ResponseEntity<Student> updateStudent( @PathVariable Long id, @RequestBody Student student) {
+    public ResponseEntity<Student> updateStudent( @PathVariable Long id, @RequestBody StudentDTO studentNew) throws Exception {
 
         //TODO validar datos de entrada y requisitos
-        Optional optStudent = studentRepository.findById(id);
+        Optional<Student> optStudent = studentRepository.findById(id);
+        StudentService studentService = new StudentServiceImpl();
 
         if (optStudent.isPresent()) {
-            student.setId(id);
-            studentRepository.save(student);
+            Student student=studentService.convertStudentUpdate(studentNew, optStudent.get());
+            studentRepository.saveAndFlush(student);
+            System.out.println("actualizado estudiante ok");
             return  ResponseEntity.ok(student);
         }else {
             log.warn("trying to update a student that does not exist");
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("update/document/{id}")
+    public ResponseEntity<Student> updateStudentDocument(@PathVariable Long id, @RequestBody MultipartFile document) throws Exception {
+        Optional<Student> studentOptional = studentRepository.findById(id);
+        UploadFile uploadFile = new UploadFileImpl();
+        studentOptional.get().setDocument(uploadFile.uploadPdf(document));
+        studentRepository.saveAndFlush(studentOptional.get());
+        System.out.println("actualizado documento ok");
+        return ResponseEntity.ok(studentOptional.get());
+    }
+
+    @PutMapping("delete/document/{id}")
+    public ResponseEntity<Student> deleteStudentDocument(@PathVariable Long id) throws Exception {
+        Optional<Student> studentOptional = studentRepository.findById(id);
+        studentOptional.get().setDocument(null);
+        studentRepository.saveAndFlush(studentOptional.get());
+        System.out.println("eliminado documento ok");
+        return ResponseEntity.ok(studentOptional.get());
+    }
+
 
 
     @DeleteMapping("/all")

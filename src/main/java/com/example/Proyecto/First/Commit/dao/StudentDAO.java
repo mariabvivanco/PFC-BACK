@@ -21,11 +21,12 @@ public interface StudentDAO {
     List<Student> findPresence(Presence presence, User user);
     List<Student> findTransfer(Boolean transfer, User user);
     List<Student> findAllFilter(Filter filter, User user);
-    List<Student> findAllFilterPage(Filter filter, User user, Integer page, Integer perPage);//, User user, int Page, int perPage);
+    List<Student> findAllFilterPage(Filter filter, User user, Integer page, Integer perPage);
     List<Student> findKeyWord(String keyWord, User user);
     List<String > findCities(Long id);
     List<String> findCountries(Long id);
     Skill findSkill(String skill);
+
 
 
 

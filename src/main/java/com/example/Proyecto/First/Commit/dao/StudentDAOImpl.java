@@ -2,18 +2,16 @@ package com.example.Proyecto.First.Commit.dao;
 
 
 import com.example.Proyecto.First.Commit.dto.Filter;
-import com.example.Proyecto.First.Commit.dto.FilterPrueba;
-import com.example.Proyecto.First.Commit.dto.StudentPage;
 import com.example.Proyecto.First.Commit.entities.*;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.hibernate.annotations.FlushModeType;
 import org.hibernate.query.Query;
-import org.springframework.data.jpa.repository.support.QueryHints;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.math.BigInteger;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -91,7 +89,7 @@ public class StudentDAOImpl implements StudentDAO {
             }
             if (countFound==skills.size())
                 studentsFind.add(student);
-            countFound=0;
+
         }
         return studentsFind;
     }
@@ -192,22 +190,10 @@ public class StudentDAOImpl implements StudentDAO {
         }
 
 
-        /* calcular el numero de página
-
-        String countHQL = "query";
-        Long countResult = (Long) session.createQuery(countHQL).uniqueResult();
-        int lastPageNum = (int) Math.ceil(countResult / perPage) ;
-
-        // recuperar empleados de la última página
-        Query query2 = session.createQuery("");
-        query2.setFirstResult((page - 1) * perPage);
-        query2.setMaxResults((page - 1) * perPage+perPage));
-        List<Student> studentsperPage= query2.list();
-
-        return studentsperPage;*/
-
             int lastPageNum = (int) Math.ceil(students.size() / perPage);
             List<Student> studentsDev;
+            if (students.size()==0)
+                return null;
 
             if (students.size() > (page - 1) * perPage + perPage)
 
@@ -257,6 +243,8 @@ public class StudentDAOImpl implements StudentDAO {
                 "     HAVING COUNT(*)>=1 and user_id=:id").setParameter("id",id).list();
         return countries;
     }
+
+
 
 
 }

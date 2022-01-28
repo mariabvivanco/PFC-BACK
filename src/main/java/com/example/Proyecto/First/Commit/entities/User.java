@@ -113,14 +113,5 @@ public class User {
         this.code = code;
     }
 
-/* public User addStudent(Student student){
-        Set<Student> studentsTemp = this.getStudents();
-        if (studentsTemp.contains(student))
-            return null;
-        else{
-            studentsTemp.add(student);
-            this.setStudents(studentsTemp);
-            return this;
-        }
-    }*/
+
 }

@@ -122,9 +122,6 @@ public class StudentController {
     public List<Student> getStudentByTransfery(@PathVariable String typeTransfer) {
         String userName= SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> optionalUser = userRepository.findByemail(userName);
-
-        //todo lo convierte a falso sino es true ver si hay que arreglar
-
         Boolean transfer = Boolean.parseBoolean(typeTransfer);
         List<Student> students= studentDAO.findTransfer(transfer,optionalUser.get());
         return students;
@@ -226,7 +223,6 @@ public class StudentController {
         UploadFile uploadFile = new UploadFileImpl();
         studentOptional.get().setDocument(uploadFile.uploadPdf(document));
         studentRepository.saveAndFlush(studentOptional.get());
-        System.out.println("creada documento ok");
         return ResponseEntity.ok(studentOptional.get());
         }
 
@@ -236,7 +232,6 @@ public class StudentController {
         UploadFile uploadFile = new UploadFileImpl();
         studentOptional.get().setPhoto(uploadFile.uploadImage(photo));
         studentRepository.saveAndFlush(studentOptional.get());
-        System.out.println("creada foto ok");
         return ResponseEntity.ok(studentOptional.get());
     }
 
@@ -252,7 +247,6 @@ public class StudentController {
         if (optStudent.isPresent()) {
             Student student=studentService.convertStudentUpdate(studentNew, optStudent.get());
             studentRepository.saveAndFlush(student);
-            System.out.println("actualizado estudiante ok");
             return  ResponseEntity.ok(student);
         }else {
             log.warn("trying to update a student that does not exist");
@@ -266,7 +260,6 @@ public class StudentController {
         UploadFile uploadFile = new UploadFileImpl();
         studentOptional.get().setDocument(uploadFile.uploadPdf(document));
         studentRepository.saveAndFlush(studentOptional.get());
-        System.out.println("actualizado documento ok");
         return ResponseEntity.ok(studentOptional.get());
     }
 
@@ -275,7 +268,6 @@ public class StudentController {
         Optional<Student> studentOptional = studentRepository.findById(id);
         studentOptional.get().setDocument(null);
         studentRepository.saveAndFlush(studentOptional.get());
-        System.out.println("eliminado documento ok");
         return ResponseEntity.ok(studentOptional.get());
     }
 
@@ -283,7 +275,6 @@ public class StudentController {
 
     @DeleteMapping("/all")
     public ResponseEntity<?> deleteAllStudent() {
-
         studentRepository.deleteAll();
         log.warn("all students were deleted ");
         return ResponseEntity.noContent().build();

@@ -1,84 +1,45 @@
-package com.example.Proyecto.First.Commit.entities;
+package com.example.Proyecto.First.Commit.dto;
 
+import com.example.Proyecto.First.Commit.entities.Presence;
+import com.example.Proyecto.First.Commit.entities.Skill;
+import com.example.Proyecto.First.Commit.entities.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.boot.autoconfigure.cache.CacheType;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
 
+public class StudentPage {
 
-public class Student {
-
-    @Id
-
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String name;
-
-    @Column(length = 20)
     private String country;
-
-    @Column(length = 20)
     private String city;
-
-    @Column(name= "phone_number",  length = 15)
-    private String phoneNumber;
-
-    @Column( length = 50)
+    private String phone_number;
     private String email;
-
     private Presence presence;
-
     private Boolean transfer;
-
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE,
-            CascadeType.REFRESH, CascadeType.DETACH },
-            fetch = FetchType.EAGER)
-    private Set<Skill> skills = new HashSet<Skill>();
-
+    private String skill;
     private String photo;
-
     private String document;
+    //private int total;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE,
-            CascadeType.REFRESH, CascadeType.DETACH },
-        fetch = FetchType.EAGER)
-    @JsonIgnore
-    private User user = null;
-
-
-
-    public Student() {
+    public StudentPage() {
     }
 
-    public Student(Long id, String name, String country, String city, String phoneNumber, String email, Presence presence,
-                   Boolean transfer, Set<Skill> skills, String photo, String document, User user) {
+    public StudentPage(Long id, String name, String country, String city, String phone_number, String email, Presence presence, Boolean transfer, String skill, String photo, String document) {
         this.id = id;
         this.name = name;
         this.country = country;
         this.city = city;
-        this.phoneNumber = phoneNumber;
+        this.phone_number = phone_number;
         this.email = email;
         this.presence = presence;
         this.transfer = transfer;
-        this.skills = skills;
+        this.skill = skill;
         this.photo = photo;
         this.document = document;
-        this.user = user;
-
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public Long getId() {
@@ -113,12 +74,12 @@ public class Student {
         this.city = city;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPhone_number() {
+        return phone_number;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone_number(String phone_number) {
+        this.phone_number = phone_number;
     }
 
     public String getEmail() {
@@ -145,12 +106,12 @@ public class Student {
         this.transfer = transfer;
     }
 
-    public Set<Skill> getSkills() {
-        return skills;
+    public String getSkill() {
+        return skill;
     }
 
-    public void setSkills(Set<Skill> skills) {
-        this.skills = skills;
+    public void setSkill(String skill) {
+        this.skill = skill;
     }
 
     public String getPhoto() {

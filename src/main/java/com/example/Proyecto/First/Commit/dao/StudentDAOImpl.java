@@ -2,16 +2,16 @@ package com.example.Proyecto.First.Commit.dao;
 
 
 import com.example.Proyecto.First.Commit.dto.Filter;
-import com.example.Proyecto.First.Commit.entities.Presence;
-import com.example.Proyecto.First.Commit.entities.Skill;
-import com.example.Proyecto.First.Commit.entities.Student;
-import com.example.Proyecto.First.Commit.entities.User;
+import com.example.Proyecto.First.Commit.entities.*;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.math.BigInteger;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +30,16 @@ public class StudentDAOImpl implements StudentDAO {
 
     public StudentDAOImpl(Session session){
         this.session = session;
+    }
+
+    @Override
+    public Skill findSkill(String skill){
+        Query<Skill> query = session.createQuery("from Skill where skill = :skill and nivel = :nivel", Skill.class);
+
+        query.setParameter("skill", skill);
+        query.setParameter("nivel", Nivel.JUNIOR);
+        Skill skillFound = query.getSingleResult();
+        return skillFound;
     }
 
     @Override
@@ -79,7 +89,7 @@ public class StudentDAOImpl implements StudentDAO {
             }
             if (countFound==skills.size())
                 studentsFind.add(student);
-            countFound=0;
+
         }
         return studentsFind;
     }
@@ -103,17 +113,21 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public List<Student> findAllFilter(Filter filter, User user){
+        session.clear();
         Query<Student> query = session.createQuery("from Student where (user = :user) and " +
                 "(transfer = :transfer or :transfer is null) and" +
                 "(city = :city or :city is null) and" +
                 "(country = :country or :country is null) and" +
                 "(presence = :presence or (presence = :presenceM) or :presence is null)", Student.class);
+
         query.setParameter("user", user);
         query.setParameter("transfer", filter.getTransfer());
         query.setParameter("city", filter.getCity());
         query.setParameter("country", filter.getCountry());
         query.setParameter("presence", filter.getPresence());
         query.setParameter("presenceM", Presence.Mixed);
+        query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
         List<Student> students = query.list();
         if (!(filter.getSkills()==null)){
             List<Student> studentsFind = new ArrayList();
@@ -137,9 +151,71 @@ public class StudentDAOImpl implements StudentDAO {
 
     }
 
+
+    @Override
+    public List<Student> findAllFilterPage(Filter filter, User user, Integer page, Integer perPage) {
+        session.clear();
+        Query<Student> query = session.createQuery("from Student where (user = :user) and " +
+                "(transfer = :transfer or :transfer is null) and" +
+                "(city = :city or :city is null) and" +
+                "(country = :country or :country is null) and" +
+                "(presence = :presence or (presence = :presenceM) or :presence is null)", Student.class);
+
+        query.setParameter("user", user);
+        query.setParameter("transfer", filter.getTransfer());
+        query.setParameter("city", filter.getCity());
+        query.setParameter("country", filter.getCountry());
+        query.setParameter("presence", filter.getPresence());
+        query.setParameter("presenceM", Presence.Mixed);
+        query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+        List<Student> students = query.list();
+        if (!(filter.getSkills() == null)) {
+            List<Student> studentsFind = new ArrayList();
+            for (Student student : students) {
+
+                int countFound = 0;
+                for (String skillToFound : filter.getSkills()) {
+                    for (Skill skillToCompare : student.getSkills()) {
+                        if (skillToCompare.getSkill().equalsIgnoreCase(skillToFound))
+                            countFound++;
+                    }
+
+                }
+                if (countFound == filter.getSkills().size())
+                    studentsFind.add(student);
+
+            }
+            students = studentsFind;
+        }
+
+
+            int lastPageNum = (int) Math.ceil(students.size() / perPage);
+            List<Student> studentsDev;
+            if (students.size()==0)
+                return null;
+
+            if (students.size() > (page - 1) * perPage + perPage)
+
+                studentsDev = students.subList((page - 1) * perPage, (page - 1) * perPage + perPage);
+
+            else
+
+                studentsDev = students.subList((page - 1) * perPage, students.size());
+
+            studentsDev.get(0).setDocument(Integer.toString(students.size()));
+
+
+            return studentsDev;
+
+    }
+
+
+
     @Override
     public List<Student> findKeyWord(String keyWord, User user){
-        Query<Student> query = session.createQuery("from Student where (user = :user) and ((name LIKE :keyWord)or(email LIKE :keyWord)) ", Student.class);
+        Query<Student> query = session.createQuery("from Student where (user = :user) and ((UPPER(name) " +
+                "LIKE UPPER(:keyWord))or(UPPER(email) LIKE UPPER(:keyWord))) ", Student.class);
 
         String key = ("%"+keyWord+"%");
         query.setParameter("keyWord", key);
@@ -167,6 +243,8 @@ public class StudentDAOImpl implements StudentDAO {
                 "     HAVING COUNT(*)>=1 and user_id=:id").setParameter("id",id).list();
         return countries;
     }
+
+
 
 
 }

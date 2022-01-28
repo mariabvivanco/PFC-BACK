@@ -1,6 +1,5 @@
 package com.example.Proyecto.First.Commit.service.uploadfile;
 
-
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.Proyecto.First.Commit.controller.StudentController;
@@ -9,15 +8,13 @@ import com.example.Proyecto.First.Commit.exception.InvalidImageFormatException;
 import com.example.Proyecto.First.Commit.exception.InvalidSizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
-@Service
 public class UploadFileImpl implements UploadFile{
-
     private final String cloudName = System.getenv().get("CLOUDINARY_CLOUD_NAME");
     private final String apiKey = System.getenv("CLOUDINARY_API_KEY");
     private final String apiSecret = System.getenv("CLOUDINARY_API_SECRET");
@@ -86,7 +83,7 @@ public class UploadFileImpl implements UploadFile{
 
         }
 
-        if (!Objects.requireNonNull(document.getContentType()).equalsIgnoreCase("document/pdf")){
+        if (!Objects.requireNonNull(document.getContentType()).equalsIgnoreCase("application/pdf")){
             log.error("Format with error");
             throw new InvalidImageFormatException("Format with error");
         }
@@ -100,5 +97,4 @@ public class UploadFileImpl implements UploadFile{
 
         return response.get("secure_url").toString();
     }
-
 }

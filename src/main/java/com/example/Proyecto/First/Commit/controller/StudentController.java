@@ -56,7 +56,6 @@ public class StudentController {
     public List<Student> getAllStudentUser() {
         String userName= SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> optionalUser = userRepository.findByemail(userName);
-
         return studentDAO.findAll(optionalUser.get());
     }
 
@@ -70,24 +69,11 @@ public class StudentController {
     }
 
 
-    @GetMapping("/city/{nameCity}")
-    public Set<Student> getStudentByCityUser(@PathVariable String nameCity) {
-
-        List<Student> studentUserAll = studentRepository.findAll();
-        Set<Student> students = new HashSet<>();
-        for (Student student: studentUserAll) {
-            if (student.getCity().equalsIgnoreCase(nameCity))
-                students.add(student);
-        }
-                return students;
-    }
-
     @GetMapping("/cityUser/{nameCity}")
     public List<Student> getStudentByCity(@PathVariable String nameCity) {
         String userName= SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> optionalUser = userRepository.findByemail(userName);
         List<Student> students= studentDAO.findCity(nameCity,optionalUser.get());
-
         return students;
     }
 
@@ -103,7 +89,6 @@ public class StudentController {
         else if (typePresence.equalsIgnoreCase("Presence"))
             presc = Presence.Face_to_face;
         else return null;
-
 
         List<Student> students= studentDAO.findPresence(presc,optionalUser.get());
         return students;

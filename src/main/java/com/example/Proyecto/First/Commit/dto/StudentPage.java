@@ -1,13 +1,7 @@
 package com.example.Proyecto.First.Commit.dto;
 
 import com.example.Proyecto.First.Commit.entities.Presence;
-import com.example.Proyecto.First.Commit.entities.Skill;
-import com.example.Proyecto.First.Commit.entities.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 
 public class StudentPage {

@@ -31,7 +31,6 @@ public class SkillController {
         for (Skill skill:skillRepository.findAll()){
             skills.add(skill.getSkill()); }
 
-
         return ResponseEntity.ok(skills);
     }
 
@@ -44,7 +43,6 @@ public class SkillController {
         }
 
         if (skill.getId() != null) {
-
             Optional optSkill = skillRepository.findById(skill.getId());
             if (optSkill.isPresent()) {
                 log.warn("trying to update a skill that exist");

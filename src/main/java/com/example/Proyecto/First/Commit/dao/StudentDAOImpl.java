@@ -8,10 +8,6 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +31,6 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public Skill findSkill(String skill){
         Query<Skill> query = session.createQuery("from Skill where skill = :skill and nivel = :nivel", Skill.class);
-
         query.setParameter("skill", skill);
         query.setParameter("nivel", Nivel.JUNIOR);
         Skill skillFound = query.getSingleResult();
@@ -49,7 +44,6 @@ public class StudentDAOImpl implements StudentDAO {
         query.setParameter("user", user);
         List<Student> students = query.list();
         long end = System.currentTimeMillis();
-        //System.out.println("Tiempo total findAll(): " + (end - start) + " ms");
         return students;
     }
 
@@ -204,7 +198,6 @@ public class StudentDAOImpl implements StudentDAO {
                 studentsDev = students.subList((page - 1) * perPage, students.size());
 
             studentsDev.get(0).setDocument(Integer.toString(students.size()));
-
 
             return studentsDev;
 

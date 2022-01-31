@@ -1,19 +1,15 @@
 package com.example.Proyecto.First.Commit;
 
 import com.example.Proyecto.First.Commit.dao.StudentDAO;
-import com.example.Proyecto.First.Commit.dto.Filter;
 import com.example.Proyecto.First.Commit.entities.*;
 import com.example.Proyecto.First.Commit.repository.SkillRepository;
 import com.example.Proyecto.First.Commit.repository.StudentRepository;
 import com.example.Proyecto.First.Commit.repository.UserRepository;
 import java.util.*;
-
-import org.apache.coyote.http11.AbstractHttp11Protocol;
-import org.hibernate.query.Query;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
+
 
 
 import java.util.ArrayList;
@@ -21,7 +17,7 @@ import java.util.ArrayList;
 @SpringBootApplication
 public class ProyectoFirstCommitApplication {
 
-	public int page=0, perPage=0;
+
 
 	public static void main(String[] args) throws Exception {
 		ApplicationContext context = SpringApplication.run(ProyectoFirstCommitApplication.class, args);
@@ -190,11 +186,7 @@ public class ProyectoFirstCommitApplication {
 
 
 
-
 	}
-
-
-
 
 
 }

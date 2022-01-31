@@ -69,12 +69,10 @@ public class UserController {
             Optional<User> optionalUser = userRepository.findByemail(verifyCodeDTO.getEmail());
             if ((verifyCodeDTO.getCode()!="")&&(optionalUser.isPresent())) {
                 if (optionalUser.get().getCode().equals(verifyCodeDTO.getCode())){
-
                     optionalUser.get().setCode("ok");
                     userRepository.save(optionalUser.get());
                     return ResponseEntity.ok("ok");
                 }
-
             }
             return ResponseEntity.noContent().build();
 
@@ -91,13 +89,6 @@ public class UserController {
             userRepository.save(optionalUser.get());
             return ResponseEntity.ok("ok");
         }
-
         return ResponseEntity.badRequest().build();
-
     }
-
-
-
-
-
 }
